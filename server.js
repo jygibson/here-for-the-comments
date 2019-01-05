@@ -22,8 +22,12 @@ app.engine("handlebars", exphbs({defaultLayout: "main"}));
 app.set("view engine", "handlebars");
 
 //routes
-require("./routes/apiRoutes");
-require("./routes/htmlRoutes");
+
+var htmlRoutes = require("./routes/htmlRoutes")
+app.use(htmlRoutes);
+// var apiRoutes = require("./routes/apiRoutes");
+// app.use(apiRoutes);
+
 
 // // Start our server listening.
 app.listen(PORT, function() {
