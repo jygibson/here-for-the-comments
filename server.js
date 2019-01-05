@@ -1,12 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
-
-mongoose.connect(MONGODB_URI);
-
-var PORT = process.env.PORT || 8080;
-
+var PORT = process.env.PORT || 3000;
 var app = express();
+const exphbs = require("express-handlebars");
+
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 app.use(express.static("public"));
 // // Serve static content for the app from the "public" directory in the application directory.
@@ -17,16 +16,20 @@ app.use(express.json());
 
 // // Set Handlebars.
 
-var exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({defaultLayout: "main"}));
 app.set("view engine", "handlebars");
 
 //routes
+app.get("/", function(req, res) {
+  console.log("stuff")
+  res.render("index");
+});
 
-var htmlRoutes = require("./routes/htmlRoutes")
-app.use(htmlRoutes);
-// var apiRoutes = require("./routes/apiRoutes");
-// app.use(apiRoutes);
+//this loads the saved articles page
+app.get("/saved", function(req, res){
+  console.log("things")
+  res.render("saved");
+})
 
 
 // // Start our server listening.
