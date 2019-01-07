@@ -1,17 +1,14 @@
-// var express = require("express");
-// var app = express();
-// var router = express.Router()
-   
-// module.exports = function(app){
-//    //this loads the index page
-//     app.get("/", function(req, res) {
-//         console.log("stuff")
-//         res.render("index");
-//       });
+
+module.exports = function(app){
+ //this loads the index page
+    app.get("/", function(req, res) {
+        res.render("index");
+      });
     
-//     //this loads the saved articles page
-//     app.get("/saved", function(req, res){
-//         console.log("things")
-//         res.render("saved");
-//     })
-// }
+    //this loads the saved articles page
+    app.get("/saved", function(req, res){
+        res.render("saved");
+    })
+}
+
+    //question for ronny/eric/glenn - why does this work in the server page, but not on this page?

@@ -4,8 +4,17 @@ const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlin
 var PORT = process.env.PORT || 3000;
 var app = express();
 const exphbs = require("express-handlebars");
-
+const db = require("./models");
+const axios = require("axios");
+const cheerio = require("cheerio");
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+
+//tests database connections
+var test = mongoose.connection;
+test.on('error', console.error.bind(console, 'connection error:'));
+test.once('open', function() {
+  console.log("we're connected!")
+});
 
 app.use(express.static("public"));
 // // Serve static content for the app from the "public" directory in the application directory.
@@ -14,23 +23,84 @@ app.use(express.static("public"));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
+// const axios = require("axios");
+// const cheerio = require("cheerio");
+
+// GET route for scraping the new york times site
+app.get("/scrape", function (req, res) {
+    //get the html body with axios
+    axios.get("https://www.nytimes.com/").then(function (response) {
+        //load response into Cheerio
+        var $ = cheerio.load(response.data);
+        //grabbing the h2 within the article
+        console.log(response.data);
+        $("article h2").each(function (i, element) {
+            //empty result object
+            var result = {};
+            //adds the info to the empty results object
+            result.title = $(this).children("a").text();
+            result.link = $(this).children("a").attr("href");
+            //creates a new article using the result object we built
+            db.Article.create(result).then(function (dbArticle) {
+                //views what it is in console
+                console.log(dbArticle)
+                //catches errors
+            }).catch(function (err) {
+                return res.json(err);
+            })
+        });
+        //send a response if successful
+        res.send("Scrape Complete")
+    })
+
+})
+
+//GET route for the articles in the database
+app.get("/articles", function (req, res) {
+    db.Article.find({}).then(function (dbArticle) {
+        res.json(dbArticle);
+    }).catch(function (err) {
+        res.json(err)
+    });
+});
+
+app.get("/articles/:id", function (req, res) {
+    db.Article.findOne({ _id: req.params.id })
+        .populate("note").then(function (dbArticle) {
+            res.json(dbArticle);
+        }).catch(function (err) {
+            res.json(err)
+        });
+});
+
+app.post("/articles/:id", function (req, res) {
+    db.Comments.create(req.body).then(function (dbComment) {
+        return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbComment }, { new: true })
+    }).then(function (dbArticle) {
+        res.json(dbArticle);
+    })
+        .catch(function (err) {
+            res.json(err)
+        });
+});
+
+//routes
+// require("./routes/apiRoutes");
+// require("./routes/htmlRoutes");
+
 // // Set Handlebars.
 
 app.engine("handlebars", exphbs({defaultLayout: "main"}));
 app.set("view engine", "handlebars");
 
-//routes
 app.get("/", function(req, res) {
-  console.log("stuff")
   res.render("index");
 });
 
 //this loads the saved articles page
 app.get("/saved", function(req, res){
-  console.log("things")
   res.render("saved");
 })
-
 
 // // Start our server listening.
 app.listen(PORT, function() {
