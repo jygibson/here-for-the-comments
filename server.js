@@ -16,7 +16,7 @@ test.once('open', function() {
   console.log("we're connected!")
 });
 
-app.use(express.static("public"));
+app.use(express.static("/public"));
 // // Serve static content for the app from the "public" directory in the application directory.
 
 //middleware for parsing data as JSON
