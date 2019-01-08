@@ -7,6 +7,7 @@ const exphbs = require("express-handlebars");
 const db = require("./models");
 const axios = require("axios");
 const cheerio = require("cheerio");
+const path= require("path");
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 //tests database connections
@@ -16,7 +17,7 @@ test.once('open', function() {
   console.log("we're connected!")
 });
 
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, '/public')));
 // // Serve static content for the app from the "public" directory in the application directory.
 
 //middleware for parsing data as JSON
