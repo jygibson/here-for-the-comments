@@ -7,8 +7,9 @@ app.get("/scrape", function (req, res) {
     axios.get("https://www.nytimes.com/").then(function (response) {
         //load response into Cheerio
         var $ = cheerio.load(response.data);
+        res.send(response.data)
         //grabbing the h2 within the article
-        $("article h2").each(function (i, element) {
+        $("article.h2").each(function (i, element) {
             //empty result object
             var result = {};
             //adds the info to the empty results object

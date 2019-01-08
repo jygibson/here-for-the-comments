@@ -23,8 +23,6 @@ app.use(express.static("public"));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
-// const axios = require("axios");
-// const cheerio = require("cheerio");
 
 // GET route for scraping the new york times site
 app.get("/scrape", function (req, res) {
@@ -33,27 +31,28 @@ app.get("/scrape", function (req, res) {
         //load response into Cheerio
         var $ = cheerio.load(response.data);
         //grabbing the h2 within the article
-        console.log(response.data);
-        $("article h2").each(function (i, element) {
+        $(".css-6p6lnl").each(function (i, element) {
             //empty result object
             var result = {};
             //adds the info to the empty results object
-            result.title = $(this).children("a").text();
             result.link = $(this).children("a").attr("href");
+            result.title = $(this).children("a").text();
+            console.log(result);
             //creates a new article using the result object we built
-            db.Article.create(result).then(function (dbArticle) {
+            db.Article.create(result)
+            .then(function(dbArticle) {
                 //views what it is in console
                 console.log(dbArticle)
                 //catches errors
-            }).catch(function (err) {
-                return res.json(err);
             })
+            .catch(function (err) {
+            return res.json(err);
+            });
         });
         //send a response if successful
-        res.send("Scrape Complete")
-    })
-
-})
+        res.send("Scrape Complete"); 
+    });
+});
 
 //GET route for the articles in the database
 app.get("/articles", function (req, res) {
