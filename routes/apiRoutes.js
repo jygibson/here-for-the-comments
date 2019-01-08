@@ -7,28 +7,29 @@ app.get("/scrape", function (req, res) {
     axios.get("https://www.nytimes.com/").then(function (response) {
         //load response into Cheerio
         var $ = cheerio.load(response.data);
-        res.send(response.data)
         //grabbing the h2 within the article
-        $("article.h2").each(function (i, element) {
+        $(".css-6p6lnl").each(function (i, element) {
             //empty result object
             var result = {};
             //adds the info to the empty results object
-            result.title = $(this).children("a").text();
             result.link = $(this).children("a").attr("href");
+            result.title = $(this).children("a").text();
+            console.log(result);
             //creates a new article using the result object we built
-            db.Article.create(result).then(function (dbArticle) {
+            db.Article.create(result)
+            .then(function(dbArticle) {
                 //views what it is in console
                 console.log(dbArticle)
                 //catches errors
-            }).catch(function (err) {
-                return res.json(err);
             })
+            .catch(function (err) {
+            return res.json(err);
+            });
         });
         //send a response if successful
-        res.send("Scrape Complete")
-    })
-
-})
+        res.send("Scrape Complete"); 
+    });
+});
 
 //GET route for the articles in the database
 app.get("/articles", function (req, res) {
