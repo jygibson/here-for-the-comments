@@ -1,10 +1,6 @@
 $(document).ready(function(){
-// $.getJSON("/articles", function(data){
-//     for (let i=0; i<data.length; i++){
-//         $("#articles").append("<p data-id='"+ data[i]._id + "'>"+data[i].title + "<br />" + data[i].link + "</p>");
 
-//     }
-// });
+$(document).on("click", ".scrape", newScrape);
 
 function pageOpen(){
     $.getJSON("/articles").then(function(data){
@@ -41,6 +37,12 @@ function createNewCard(article){
     newCard.data("_id", article._id);
     return newCard;
 }
+
+function newScrape(){
+    $.get("/scrape").then(function(data){
+        pageOpen()
+    });
+};
 
 pageOpen();
 });

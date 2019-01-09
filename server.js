@@ -51,7 +51,7 @@ app.get("/scrape", function (req, res) {
             });
         });
         //send a response if successful
-        res.send("Scrape Complete"); 
+        res.send("scrape complete"); 
     });
 });
 
